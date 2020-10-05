@@ -17,6 +17,9 @@ app.get('/', (req, res) => {
     res.render('home', { 
         locals: {
             globalvariable: 'GOOD LORD IT WORKS'
+        },
+        partials: {
+            head: 'partials/head'
         }
     })
 })
@@ -26,31 +29,30 @@ app.get('/about', (req, res) => {
 })
 
 app.get('/poets/', (req, res) => {
-    let poets = ""; 
-    for(let x = 0; x < data.length; x++){
-        var poet = data[x];
-        poets += `<li><a href="/poets/${poet.name}">${poet.name}</a></li>`
-    }
-    res.send(`<ul>
-    ${poets}
-    </ul>`)
+   res.render('poet-list', {
+       locals: {
+           data: data,
+       }
+   })
 })
+
 app.get('/poets/:name', (req, res) => {
     const { name } = req.params;
-    const isPoet = data.find(element => {
+    const thisPoet = data.find(element => {
         if(element.name == name){
             return true;
         }
         return false;
     })
-    if(!isPoet){
+    if(!thisPoet){
         res.status(404);
         res.send("I haven't added that poet yet!")
     }
-    res.send(`<Ah, one of my favorite poets: <br> 
-    <h1>${isPoet.name} </h1><br>
-    <p>was born in ${isPoet.born}. Their best work to date is <a href=${isPoet.bestref}>${isPoet.best}.</a><br>
-    Would I AVOID reading this work to children? ${isPoet.cw}`);
+    res.render('poet', {
+        locals: {
+            isPoet: thisPoet
+        }
+    });
 })
 
 server.listen(port, hostname, () => {
